@@ -308,9 +308,15 @@ if(getLocationBtn && addressInput) {
 const placeOrderBtn = document.getElementById('place-order');
 placeOrderBtn?.addEventListener('click', async () => {
   const name = (document.getElementById('name') as HTMLInputElement).value.trim();
-  const phone = (document.getElementById('phone') as HTMLInputElement).value.trim();
+  const phone = (document.getElementById('phone-order') as HTMLInputElement).value.trim();
   const address = (document.getElementById('address') as HTMLInputElement).value.trim();
   const comments = (document.getElementById('comments') as HTMLTextAreaElement).value.trim();
+  const totalText = document.getElementById('total-general')?.textContent || '0';
+
+  // Quitar todo excepto números y punto
+  const total = Number(
+    totalText.replace(/[^0-9.]/g, '')
+  );
 
   if(!userPhone) { alert("No hay teléfono definido."); return; }
 
@@ -323,6 +329,7 @@ placeOrderBtn?.addEventListener('click', async () => {
         celular: phone || null,
         ubicacion: address || null,
         comentarios: comments || null,
+        total : total || null,
         status: 'pendiente',
       })
       .eq('telefono_cliente', userPhone)
@@ -332,7 +339,7 @@ placeOrderBtn?.addEventListener('click', async () => {
 
     // Limpiar campos y cerrar panel
     (document.getElementById('name') as HTMLInputElement).value = '';
-    (document.getElementById('phone') as HTMLInputElement).value = '';
+    (document.getElementById('phone-order') as HTMLInputElement).value = '';
     (document.getElementById('address') as HTMLInputElement).value = '';
     (document.getElementById('comments') as HTMLTextAreaElement).value = '';
     orderPanel?.classList.add('hidden');

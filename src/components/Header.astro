@@ -65,33 +65,30 @@ const phoneInputModal = document.getElementById('phone-input-modal');
 const phoneCancel = document.getElementById('phone-cancel');
 const phoneSubmit = document.getElementById('phone-submit');
 
-// === Función para actualizar botón según estado del teléfono ===
 function updatePhoneToggle() {
   const savedPhone = localStorage.getItem('userPhone');
   if (savedPhone) {
     userPhone = savedPhone;
+    window.loadPlate(userPhone); 
     if (phoneToggleBtn) phoneToggleBtn.textContent = 'Salir';
   } else {
     userPhone = '';
     if (phoneToggleBtn) phoneToggleBtn.textContent = 'Ingresar teléfono';
+    window.loadPlate('');
   }
 }
 
-// === Al cargar la página, revisar si hay teléfono guardado ===
 window.addEventListener('DOMContentLoaded', () => {
   updatePhoneToggle();
 
 });
 
-// === Click en toggle ===
 phoneToggleBtn?.addEventListener('click', () => {
   if (userPhone) {
-    // Si ya hay teléfono -> salir
     localStorage.removeItem('userPhone');
     userPhone = '';
     updatePhoneToggle();
   } else {
-    // Abrir modal para ingresar teléfono
     if(phoneModal) phoneModal.classList.remove('hidden');
   }
 });

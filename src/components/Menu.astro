@@ -946,7 +946,6 @@ async function addProductToPlateDB(userPhone: string, product: PlateProduct) {
           precio_unitario: product.price,
           modo: 'unidad' // o 'gramos' / 'pesos'
         });
-        alert(product.quantity);
       if (detalleError) throw detalleError;
     }
 

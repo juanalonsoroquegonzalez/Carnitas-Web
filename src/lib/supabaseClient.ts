@@ -4,17 +4,12 @@ let supabase: SupabaseClient;
 
 export function getSupabaseClient() {
   if (!supabase) {
-    const url = import.meta.env.PUBLIC_SUPABASE_URL;
-    const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
-    
-    // Validación
-    if (!url || !key) {
-      throw new Error('❌ Faltan variables de entorno: PUBLIC_SUPABASE_URL y/o PUBLIC_SUPABASE_ANON_KEY');
-    }
-    
-    console.log('✅ Inicializando Supabase con:', { url: url.substring(0, 20) + '...' });
+    // Keys hardcodeadas directamente
+    const url = 'https://jblibgbxfqbyinkvlgsk.supabase.co';
+    const key = 'sb_publishable_YO1Ch0EZuCOAl_DKHlPExw_SAe9ERHj';
     
     supabase = createClient(url, key);
+    console.log('✅ Inicializando Supabase con keys hardcodeadas');
   }
 
   return supabase;

@@ -9,7 +9,6 @@ export function getSupabaseClient() {
     const key = 'sb_publishable_YO1Ch0EZuCOAl_DKHlPExw_SAe9ERHj';
     
     supabase = createClient(url, key);
-    console.log('✅ Inicializando Supabase con keys hardcodeadas');
   }
 
   return supabase;

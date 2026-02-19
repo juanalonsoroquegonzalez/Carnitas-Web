@@ -234,14 +234,16 @@ window.loadActiveOrders = async function(phone: string) {
 
           <div class="text-right flex flex-col items-end gap-1">
             <div class="font-semibold">$${unit}</div>
-            <div class="text-gray-500 text-sm">Subtotal: $${sub}</div>
+            <div id="pedido-singular" class="text-gray-500 text-sm">Subtotal: $${sub}</div>
 
-            <button
-              class="text-red-500 text-xs hover:underline"
-              onclick="deleteDetalle(${item.id}, ${pedido.numero_pedido})"
+           <button
+              class="btn-delete text-red-500 text-xs hover:underline"
+              data-detalle-id="${item.id}"
+              data-pedido-num="${pedido.numero_pedido}"
             >
               Eliminar
             </button>
+
           </div>
         </div>
 
@@ -264,16 +266,6 @@ window.loadActiveOrders = async function(phone: string) {
     if (pedidoDiv) pedidoDiv.innerHTML = `<strong>Pedido #${pedido.numero_pedido}</strong> - ${new Date(pedido.fecha).toLocaleString()}`;
   });
 }
-function actualizarTotalPedido(numeroPedido: number, subtotalRestar: number) {
-  const totalEl = document.getElementById(`total-pedido-${numeroPedido}`);
-  if (!totalEl) return;
-
-  const totalActual = Number(totalEl.innerText) || 0;
-  const nuevoTotal = Math.max(totalActual - subtotalRestar, 0);
-
-  totalEl.innerText = nuevoTotal.toFixed(2);
-}
-
 // --- Función para actualizar botón toggle ---
 function updatePhoneToggle() {
   const savedPhone = localStorage.getItem('userPhone');
@@ -418,7 +410,18 @@ async function deleteDetalle(detalleId: number, numeroPedido: number) {
   const detalleEl = document.getElementById(`detalle-${detalleId}`);
   if (!detalleEl) return;
 
-  const subtotal = Number(detalleEl.dataset.subtotal) || 0;
+  const subtotal = Number(detalleEl.dataset.subtotal);
+  
+  detalleEl.remove();
+  
+  const totalGeneralDiv = document.getElementById('total-general');
+    if (totalGeneralDiv) {
+      let totalGeneral = 0;
+      document.querySelectorAll<HTMLElement>('#pedido-singular').forEach(tp => {
+        totalGeneral += Number(tp.textContent?.replace(/[^0-9.]/g, '')|| 0);
+      });
+      totalGeneralDiv.innerHTML = `<span class="font-bold text-lg">Total Pedido: $${totalGeneral}</span>`;
+    }
 
   const { error } = await supabase
     .from('pedido_detalle')
@@ -448,9 +451,31 @@ async function deleteDetalle(detalleId: number, numeroPedido: number) {
       .eq('numero_pedido', numeroPedido)
       .eq('telefono_cliente', userPhone);
   }
-
-  window.loadActiveOrders(userPhone);
 }
+document.addEventListener('click', async (e) => {
+  const target = e.target as HTMLElement;
+  
+  if (target && target.classList.contains('btn-delete')) {
+    const detalleId = Number(target.dataset.detalleId);
+    const numeroPedido = Number(target.dataset.pedidoNum);
+
+    if (!isNaN(detalleId) && !isNaN(numeroPedido)) {
+      await deleteDetalle(detalleId, numeroPedido);
+      // recarga los pedidos después de eliminar
+      const phoneInput = document.getElementById('userPhone') as HTMLInputElement;
+      if (phoneInput?.value) {
+        await window.loadActiveOrders(phoneInput.value);
+      }
+    }
+  }
+});
+document.getElementById('btnLoadOrders')?.addEventListener('click', async () => {
+  const phoneInput = document.getElementById('userPhone') as HTMLInputElement;
+  if (phoneInput?.value) {
+    await window.loadActiveOrders(phoneInput.value);
+  }
+});
+
 
 // @ts-ignore
 window.deletePedido = deletePedido;

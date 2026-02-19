@@ -204,8 +204,8 @@ window.loadActiveOrders = async function(phone: string) {
       let sub
       if(item.modo === 'gramos'){
         sub = item.precio_unitario;
-        unit = subtotal;
-        totalPedido += unit;
+        unit = '340';
+        totalPedido += sub;
       }
       else if(item.modo === 'pesos'){
         unit = '340';

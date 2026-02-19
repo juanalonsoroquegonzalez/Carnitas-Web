@@ -158,6 +158,9 @@ window.loadActiveOrders = async function(phone: string) {
         id,
         cantidad,
         precio_unitario,
+        tipo,
+        unidad,
+        modo,
         producto(
           nombre,
           imagen
@@ -165,7 +168,14 @@ window.loadActiveOrders = async function(phone: string) {
       )
     `)
     .eq('telefono_cliente', phone)
-    .eq('status', 'activo');
+    .eq('status', 'activo')
+    // Ordenar pedidos del más reciente al más antiguo
+    .order('fecha', { ascending: false })
+    // Ordenar detalles por ID descendente
+    .order('id', { 
+      foreignTable: 'pedido_detalle', 
+      ascending: false 
+    });
 
   if(error) {
     container.innerHTML = '<p class="text-red-500">Error cargando pedidos.</p>';
@@ -189,9 +199,24 @@ window.loadActiveOrders = async function(phone: string) {
     let totalPedido = 0;
 
     const detalleHTML = pedido.pedido_detalle.map((item: any) => {
-      const subtotal = item.cantidad * item.precio_unitario;
-      totalPedido += subtotal;
-
+      let subtotal = item.cantidad * item.precio_unitario;
+      let unit;
+      let sub
+      if(item.modo === 'gramos'){
+        sub = item.precio_unitario;
+        unit = subtotal;
+        totalPedido += unit;
+      }
+      else if(item.modo === 'pesos'){
+        unit = '340';
+        sub = item.precio_unitario;
+        totalPedido += sub;
+      }
+      else{
+        sub = subtotal;
+        unit = item.precio_unitario;
+        totalPedido += sub;
+      }
       return `
        <div
           id="detalle-${item.id}"
@@ -203,12 +228,13 @@ window.loadActiveOrders = async function(phone: string) {
 
           <div class="flex-1">
             <div class="font-semibold">${item.producto.nombre}</div>
-            <div class="text-sm text-gray-500">Cantidad: ${item.cantidad}</div>
+            <div class="text-sm text-gray-700">${item.tipo}</div>
+            <div class="text-sm text-gray-500">Cantidad: ${item.cantidad}${item.unidad ? ` ${item.unidad}` : ''}</div>
           </div>
 
           <div class="text-right flex flex-col items-end gap-1">
-            <div class="font-semibold">$${item.precio_unitario}</div>
-            <div class="text-gray-500 text-sm">Subtotal: $${subtotal}</div>
+            <div class="font-semibold">$${unit}</div>
+            <div class="text-gray-500 text-sm">Subtotal: $${sub}</div>
 
             <button
               class="text-red-500 text-xs hover:underline"

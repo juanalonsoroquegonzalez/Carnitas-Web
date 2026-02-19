@@ -11,8 +11,8 @@ interface Product {
 
 const { products = [] } = Astro.props as { products?: Product[] };
 ---
-<div class="plato-container p-4 bg-gray-50 rounded-xl shadow-md">
-  <h2 class="text-xl font-bold mb-4">Mi Plato</h2>
+<div class="plato-container p-3 sm:p-4 bg-gray-50 rounded-xl shadow-md max-w-md mx-auto">
+  <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Mi Plato</h2>
 
   <div id="plate-items" class="space-y-2">
     {products.length === 0 ? (
@@ -21,16 +21,16 @@ const { products = [] } = Astro.props as { products?: Product[] };
       products.map(product => (
         <div
           id={`plate-item-${product.id}`}
-          class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm"
+          class="flex justify-between items-center bg-white p-2 sm:p-3 rounded-lg shadow-sm text-xs sm:text-sm"
         >
           <div>
             <p class="font-semibold">{product.name} {product.type ? `- ${product.type}` : ''}</p>
-            <p class="text-gray-500 text-sm">Cantidad: {product.quantity}</p>
+            <p class="text-gray-500 text-xs sm:text-sm">Cantidad: {product.quantity}</p>
           </div>
           <div class="flex items-center gap-2">
-            <span class="font-bold">${product.price * product.quantity}</span>
+            <span class="font-bold text-xs sm:text-sm">${product.price * product.quantity}</span>
             <button
-              class="text-red-500 hover:underline text-sm"
+              class="text-red-500 hover:underline text-xs sm:text-sm"
               onclick={`removeFromPlate(${product.id})`}
             >
               Eliminar
@@ -41,17 +41,17 @@ const { products = [] } = Astro.props as { products?: Product[] };
     )}
   </div>
 
-  <div class="mt-4 text-right font-bold text-lg" id="plate-total">
+  <div class="mt-3 sm:mt-4 text-right font-bold text-sm sm:text-lg" id="plate-total">
     Total: ${products.reduce((sum, p) => sum + p.price * p.quantity, 0)}
   </div>
 
-    <button
-      id="add-plate-to-cart"
-      class="mt-4 w-3/4 btn-primary block mx-auto text-xs"
-      onclick="addPlateToCart()"
-    >
-      Add Carrito
-    </button>
+  <button
+    id="add-plate-to-cart"
+    class="mt-3 sm:mt-4 w-full sm:w-3/4 btn-primary block mx-auto text-xs sm:text-sm"
+    onclick="addPlateToCart()"
+  >
+    Add Carrito
+  </button>
 </div>
 
 

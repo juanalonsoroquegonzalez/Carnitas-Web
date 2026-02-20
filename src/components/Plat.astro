@@ -221,7 +221,10 @@ async function addPlateToCartAndDB(plate: {
   const cart = (window as any).cart || [];
 
   // 🛒 Carrito local
-  const existing = cart.find((item: any) => item.plato === plate.id);
+  const existing = cart.find(
+    (item: any) =>
+      item.plato === plate.id 
+  );
 
   if (existing) {
     existing.qty += plate.qty;
@@ -270,7 +273,6 @@ async function addPlateToCartAndDB(plate: {
 
     if (errDetalle) throw errDetalle;
 
-    // 3️⃣ Marcar el plato como INACTIVO
     const { error: errUpdatePlato } = await supabase
       .from('plato')
       .update({ status: 'inactivo' })
@@ -285,6 +287,7 @@ async function addPlateToCartAndDB(plate: {
     console.error('Error al guardar el plato en la base de datos:', err);
   }
 }
+
 function clearPlateUI() {
   plate.length = 0;
 

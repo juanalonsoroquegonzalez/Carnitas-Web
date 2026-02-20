@@ -816,6 +816,7 @@ document.querySelectorAll('.add-cart-btn').forEach((btn) => {
       if (qty < 1) alert('Selecciona al menos 1 unidad');
       cantidadFinal = qty;
       precioFinal = precioBase;
+      return;
     }
 
     const savedPhone = localStorage.getItem('userPhone');
@@ -882,6 +883,10 @@ plateButtons.forEach(btn => {
     
     let qty = parseInt(input.value.replace(/[^\d]/g, ''), 10) || 0;
     // Construir objeto PlateProduct desde atributos del botón
+    if (qty <= 0) {
+      alert('Selecciona una cantidad válida para agregar al plato');
+      return;
+    }
     const product: PlateProduct = {
       id: Number(btn.dataset.id),
       name: btn.dataset.name!,
@@ -922,18 +927,20 @@ async function addProductToPlateDB(userPhone: string, product: PlateProduct) {
       .from('plato_detalle')
       .select('id, cantidad')
       .eq('id_producto', product.id)
+      .eq('id_plato', platoId)
       .eq('tipo', tipo || null)
       .maybeSingle();
 
     if (existingError && existingError.code !== 'PGRST116') throw existingError;
     
     if (existing) {
-      // 3️⃣ Actualizar cantidad sumando la nueva
+      console.log(platoId);
       const newQty = existing.cantidad + product.quantity;
       const { error: updateError } = await supabase
         .from('plato_detalle')
         .update({ cantidad: newQty })
         .eq('id_producto', product.id)
+        .eq('id_plato', platoId)
         .eq('tipo', tipo);
       if (updateError) throw updateError;
     } else {

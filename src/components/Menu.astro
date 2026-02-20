@@ -913,46 +913,43 @@ async function addProductToPlateDB(userPhone: string, product: PlateProduct) {
     } else {
       platoId = platos[0].id;
     }
-
+    const card = document.querySelector(`[data-id="${product.id}"]`)?.closest('.bg-white');
+    const tipo = card?.querySelector('input[type="radio"]:checked')?.getAttribute('value');
     // 2️⃣ Verificar si el producto ya existe en plato_detalle
     const { data: existing, error: existingError } = await supabase
       .from('plato_detalle')
       .select('id, cantidad')
-      .eq('id_plato', platoId)
       .eq('id_producto', product.id)
-      .eq('tipo', product.type || null)
-      .single();
+      .eq('tipo', tipo || null)
+      .maybeSingle();
 
     if (existingError && existingError.code !== 'PGRST116') throw existingError;
-
+    
     if (existing) {
       // 3️⃣ Actualizar cantidad sumando la nueva
       const newQty = existing.cantidad + product.quantity;
       const { error: updateError } = await supabase
         .from('plato_detalle')
         .update({ cantidad: newQty })
-        .eq('id', existing.id);
-
+        .eq('id_producto', product.id)
+        .eq('tipo', tipo);
       if (updateError) throw updateError;
     } else {
-      // 4️⃣ Insertar nuevo detalle
+      
       const { error: detalleError } = await supabase
         .from('plato_detalle')
         .insert({
           id_plato: platoId,
           id_producto: product.id,
-          tipo: product.type || null,
+          tipo: tipo || null,
           cantidad: product.quantity,
           precio_unitario: product.price,
-          modo: 'unidad' // o 'gramos' / 'pesos'
+          modo: 'pza' // o 'gramos' / 'pesos'
         });
       if (detalleError) throw detalleError;
     }
 
-    // 5️⃣ Actualizar UI
     window.loadPlate(userPhone);
-
-    console.log('Producto agregado/actualizado en el plato correctamente');
   } catch (err) {
     console.error('Error agregando producto al plato:', err);
   }
@@ -968,7 +965,7 @@ async function createOrGetPlato(userPhone: string) {
       .eq('status', 'activo')
       .order('numero_plato', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (lastPlatoError && lastPlatoError.code !== 'PGRST116') throw lastPlatoError;
     // PGRST116 = no rows found en Supabase, ok si no hay
@@ -984,7 +981,7 @@ async function createOrGetPlato(userPhone: string) {
         telefono_cliente: userPhone
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (insertError) throw insertError;
 

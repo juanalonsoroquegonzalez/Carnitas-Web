@@ -27,7 +27,25 @@ import Plato from "../components/Plat.astro";
 >
   🛒 Hacer Pedido
 </button>
-<div id="plate-container" class="fixed bottom-20 right-6 md:z-50 sm:z-50 md:w-60 sm:w-45 md:max-h-140 sm:max-h-120 overflow-y-auto">
+<!-- BOTÓN TOGGLE -->
+<button
+  id="toggle-plato"
+  class="fixed bottom-20 right-6 z-80 bg-red-600 text-white p-4 rounded-full shadow-lg hover:bg-red-700 transition"
+>
+  🍽️
+</button>
+
+<!-- CONTENEDOR PLATO -->
+<div
+  id="plate-container"
+  class="fixed bottom-36 right-6 z-50
+         sm:w-[180px] md:w-[240px]
+         sm:max-h-[400px] md:max-h-[560px]
+         overflow-y-auto
+         bg-white rounded-2xl shadow-2xl
+         transform transition-all duration-300 ease-in-out
+         scale-0 opacity-0 pointer-events-none"
+>
   <Plato />
 </div>
 <!-- Panel de pedidos -->
@@ -136,6 +154,18 @@ const orderToggle = document.getElementById('order-toggle');
 const orderPanel = document.getElementById('order-panel');
 const closePanel = document.getElementById('close-panel');
 const activeOrdersContainer = document.getElementById('active-orders');
+
+const toggleBtn = document.getElementById("toggle-plato");
+  const plate = document.getElementById("plate-container");
+
+  toggleBtn?.addEventListener("click", () => {
+    plate?.classList.toggle("scale-0");
+    plate?.classList.toggle("opacity-0");
+    plate?.classList.toggle("pointer-events-none");
+
+
+    
+  });
 
 declare global {
   interface Window {

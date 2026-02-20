@@ -569,7 +569,7 @@ document.addEventListener('click', async (e) => {
   }
 
   container.innerHTML = data.map(d => `
-    <div class="mb:text-sm sm:text-xs">
+    <div class="text-xs">
       • ${(d.id_producto as any).nombre} (${d.cantidad})
     </div>
   `).join('');
@@ -585,10 +585,8 @@ document.addEventListener('click', (e) => {
 
     if (!wrapper) return;
 
-    // Si el click fue dentro del wrapper → no cerrar
     if (wrapper.contains(target)) return;
 
-    // Ocultar
     detalle.classList.add('hidden');
   });
 });

@@ -43,7 +43,8 @@
          hover:from-yellow-600 hover:to-orange-600
          transition-all duration-300
          shadow-md hover:shadow-lg
-         active:scale-95"
+         active:scale-95
+         transition focus-visible:scale-95"
 >
   Entrar
 </button>
@@ -64,6 +65,13 @@ const phoneModal = document.getElementById('phone-modal');
 const phoneInputModal = document.getElementById('phone-input-modal');
 const phoneCancel = document.getElementById('phone-cancel');
 const phoneSubmit = document.getElementById('phone-submit');
+const plate = document.getElementById("plate-container");
+
+phoneToggleBtn?.addEventListener("click", () => {
+    plate?.classList.toggle("scale-0");
+    plate?.classList.toggle("opacity-0");
+    plate?.classList.toggle("pointer-events-none");
+  });
 
 function updatePhoneToggle() {
   const savedPhone = localStorage.getItem('userPhone');
